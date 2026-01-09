@@ -78,8 +78,8 @@ export async function loginParent(state: any, formData: FormData) {
 
   const expires = new Date(Date.now() + 120 * 60 * 1000);
   const session = await encrypt({
-    userId: parent.id,
-    name: parent.name,
+    userId: parent.id as string,
+    name: parent.name as string,
     role: "parent",
     emailVerified: parent.email_verified === 1,
     expires,
@@ -149,9 +149,9 @@ export async function loginChild(state: any, formData: FormData) {
 
   const expires = new Date(Date.now() + 120 * 60 * 1000);
   const session = await encrypt({
-    userId: child.id,
-    parentId: child.parent_id,
-    name: child.display_name,
+    userId: child.id as string,
+    parentId: child.parent_id as string,
+    name: child.display_name as string,
     role: "child",
     expires,
   });

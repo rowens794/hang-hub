@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { updateProfileImage } from "@/lib/actions.auth";
 import Image from "next/image";
 
 const PRESET_AVATARS = [
@@ -26,9 +27,9 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const saveImage = (image: string) => {
+  const saveImage = async (image: string) => {
     setProfileImage(image);
-    localStorage.setItem("userProfileImage", image);
+    await updateProfileImage(image);
     // Dispatch a custom event so other components (like header) know to update
     window.dispatchEvent(new Event("profileImageUpdated"));
   };
@@ -126,8 +127,7 @@ export default function ProfilePage() {
       <section className="mt-8 p-6 rounded-[2.5rem] bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30">
         <p className="text-amber-700 dark:text-amber-400 text-sm font-bold flex gap-2">
           <span>💡</span>
-          For now, your choice is saved in your browser. Long-term storage
-          coming soon!
+          Your profile image is now saved to the HangHub database!
         </p>
       </section>
     </div>

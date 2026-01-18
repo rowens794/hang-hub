@@ -2,9 +2,24 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  // Vercel production URL (recommended for emails)
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  // Vercel preview/branch URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+}
+
 export async function sendParentInviteEmail(parentEmail: string) {
   const signupLink = `${
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    getBaseUrl()
   }/signup`;
 
   try {
@@ -67,7 +82,7 @@ export async function sendHangApprovalEmail({
   approveToken: string;
   declineToken: string;
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   const approveLink = `${baseUrl}/approve/${approveToken}`;
   const declineLink = `${baseUrl}/approve/${declineToken}`;
 
@@ -141,7 +156,7 @@ export async function sendWelcomeEmail(
   token: string
 ) {
   const verificationLink = `${
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    getBaseUrl()
   }/verify?token=${token}`;
 
   try {

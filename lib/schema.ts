@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { db } from "./db";
 
 export async function initSchema() {
@@ -37,6 +38,25 @@ export async function initSchema() {
       FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
       FOREIGN KEY (friend_id) REFERENCES users (id) ON DELETE CASCADE
     )`,
+      // friend_requests table
+      `CREATE TABLE IF NOT EXISTS friend_requests (
+      id TEXT PRIMARY KEY,
+      from_user_id TEXT NOT NULL,
+      to_user_id TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (from_user_id) REFERENCES users (id) ON DELETE CASCADE,
+      FOREIGN KEY (to_user_id) REFERENCES users (id) ON DELETE CASCADE
+    )`,
+      // friend_groups table - personal friend categorization (supports multiple groups per friend)
+      `CREATE TABLE IF NOT EXISTS friend_groups (
+      owner_id TEXT NOT NULL,
+      friend_id TEXT NOT NULL,
+      group_name TEXT NOT NULL,
+      PRIMARY KEY (owner_id, friend_id, group_name),
+      FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE,
+      FOREIGN KEY (friend_id) REFERENCES users (id) ON DELETE CASCADE
+    )`,
       // hangs table
       `CREATE TABLE IF NOT EXISTS hangs (
       id TEXT PRIMARY KEY,
@@ -53,6 +73,17 @@ export async function initSchema() {
       hang_id TEXT NOT NULL,
       user_id TEXT NOT NULL,
       joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      parent_approved INTEGER DEFAULT 0,
+      PRIMARY KEY (hang_id, user_id),
+      FOREIGN KEY (hang_id) REFERENCES hangs (id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    )`,
+      // hang_invites table - tracks who is invited to a hang
+      `CREATE TABLE IF NOT EXISTS hang_invites (
+      hang_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (hang_id, user_id),
       FOREIGN KEY (hang_id) REFERENCES hangs (id) ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -92,11 +123,33 @@ export async function initSchema() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (parent_id) REFERENCES parents (id) ON DELETE CASCADE
     )`,
+      // hang_approval_tokens table - one-click email approval tokens
+      `CREATE TABLE IF NOT EXISTS hang_approval_tokens (
+      id TEXT PRIMARY KEY,
+      hang_id TEXT NOT NULL,
+      child_id TEXT NOT NULL,
+      action TEXT NOT NULL,
+      used INTEGER DEFAULT 0,
+      expires_at TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (hang_id) REFERENCES hangs (id) ON DELETE CASCADE,
+      FOREIGN KEY (child_id) REFERENCES children (id) ON DELETE CASCADE
+    )`,
     ],
     "write"
   );
 
   console.log("Schema initialized successfully.");
+
+  // Run migrations for existing databases
+  try {
+    await db.execute(
+      "ALTER TABLE hang_participants ADD COLUMN parent_approved INTEGER DEFAULT 0"
+    );
+    console.log("Migration: Added parent_approved column to hang_participants");
+  } catch {
+    // Column already exists, ignore
+  }
 }
 
 // If this file is run directly, execute initSchema

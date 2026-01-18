@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
               HangHub
             </span>
           </div>
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-6 md:flex">
             <a
               href="#features"
               className="text-sm font-medium hover:text-electric-purple transition-colors"
@@ -22,13 +23,14 @@ export default function Home() {
               Features
             </a>
             <a
-              href="#how-it-works"
+              href="/how-it-works"
               className="text-sm font-medium hover:text-electric-purple transition-colors"
             >
               How it Works
             </a>
+            <ThemeToggle />
             <a
-              href="/dashboard"
+              href="/get-started"
               className="rounded-full bg-[#8b5cf6] px-5 py-2 text-sm font-bold text-white hover:bg-electric-purple/90 transition-all hover:scale-105 active:scale-95 text-center"
             >
               Get Started
@@ -58,7 +60,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <a
-                    href="/dashboard"
+                    href="/get-started"
                     className="rounded-2xl bg-[#8b5cf6] px-8 py-4 text-lg font-bold text-white shadow-xl shadow-electric-purple/20 transition-all hover:bg-electric-purple/90 hover:scale-105 active:scale-95 text-center"
                   >
                     Start Your Crew
@@ -215,10 +217,10 @@ export default function Home() {
                     after-school life.
                   </p>
                   <a
-                    href="/dashboard"
+                    href="/get-started"
                     className="rounded-2xl bg-white px-10 py-4 text-lg font-black text-electric-purple shadow-xl transition-all hover:scale-110 active:scale-95 text-center"
                   >
-                    Download Today
+                    Let's Go!
                   </a>
                 </div>
               </div>

@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for dark: variants */
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --muted: #6b7280;
 }
 
 @theme {
@@ -28,10 +34,23 @@
   }
 }
 
+/* Dark mode via class (manual toggle) */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card-bg: #161616;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --muted: #9ca3af;
+}
+
+/* Dark mode via system preference (when no manual override) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card-bg: #161616;
+    --card-border: rgba(255, 255, 255, 0.1);
+    --muted: #9ca3af;
   }
 }
 

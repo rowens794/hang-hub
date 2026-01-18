@@ -1,8 +1,12 @@
-import { getChildrenAction } from "@/lib/actions.parent";
+import { getChildrenAction, getPendingHangApprovals, getHangHistory } from "@/lib/actions.parent";
 import { logout } from "@/lib/actions.auth";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AddChildForm from "./AddChildForm";
+import ChildCard from "./ChildCard";
+import PendingApprovals from "./PendingApprovals";
+import HangHistory from "./HangHistory";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function ParentDashboard() {
   const session = await getSession();
@@ -11,24 +15,29 @@ export default async function ParentDashboard() {
   }
 
   const children = await getChildrenAction();
+  const pendingApprovals = await getPendingHangApprovals();
+  const hangHistory = await getHangHistory();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-8">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-8">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-12">
           <div>
             <h1 className="text-4xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               Parent Dashboard
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-[var(--muted)] mt-2">
               Welcome back, {session.name || "Parent"}
             </p>
           </div>
-          <form action={logout}>
-            <button className="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-2 rounded-xl transition-all">
-              Log Out
-            </button>
-          </form>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <form action={logout}>
+              <button className="bg-[var(--card-bg)] hover:opacity-80 border border-[var(--card-border)] px-6 py-2 rounded-xl transition-all">
+                Log Out
+              </button>
+            </form>
+          </div>
         </header>
 
         {!session.emailVerified && (
@@ -51,63 +60,42 @@ export default async function ParentDashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Add Child Form - Only visible if verified */}
-          <div
-            className={
-              session.emailVerified ? "" : "opacity-50 pointer-events-none"
-            }
-          >
-            <AddChildForm />
-            {!session.emailVerified && (
-              <p className="text-xs text-center mt-4 text-blue-400 font-medium">
-                Verify your email to add children
-              </p>
-            )}
-          </div>
+        <PendingApprovals approvals={pendingApprovals} />
 
-          {/* Children List */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold mb-6">Your Crew</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Column - Crew & Add Child */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Your Crew</h2>
+
+            <div
+              className={
+                session.emailVerified ? "" : "opacity-50 pointer-events-none"
+              }
+            >
+              <AddChildForm />
+              {!session.emailVerified && (
+                <p className="text-xs text-center mt-2 text-blue-400 font-medium">
+                  Verify email to add children
+                </p>
+              )}
+            </div>
+
             {children.length === 0 ? (
-              <div className="bg-[#161616] p-12 rounded-2xl border border-dashed border-white/10 text-center text-gray-500">
-                No child profiles created yet. Add one to get started!
+              <div className="bg-[var(--card-bg)] p-6 rounded-xl border border-dashed border-[var(--card-border)] text-center text-[var(--muted)] text-sm">
+                No children yet
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
                 {children.map((child: any) => (
-                  <div
-                    key={child.id}
-                    className="bg-[#161616] p-6 rounded-2xl border border-white/10 flex items-center space-x-6 hover:border-blue-500/50 transition-all group"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center text-2xl font-bold overflow-hidden">
-                      {child.avatar_url ? (
-                        <img
-                          src={child.avatar_url}
-                          alt={child.display_name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        child.display_name[0]
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-bold text-lg">
-                        {child.display_name}
-                      </div>
-                      <div className="text-gray-500 text-sm">
-                        @{child.username}
-                      </div>
-                    </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-all">
-                      <button className="text-gray-400 hover:text-white">
-                        Edit
-                      </button>
-                    </div>
-                  </div>
+                  <ChildCard key={child.id} child={child} />
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Right Column - Hang History */}
+          <div className="lg:col-span-3">
+            <HangHistory history={hangHistory} />
           </div>
         </div>
       </div>

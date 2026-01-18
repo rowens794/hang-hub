@@ -54,7 +54,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl p-4 md:p-10">
       <header className="mb-10 text-center">
         <h1 className="text-4xl font-black mb-2">Your Profile</h1>
-        <p className="text-slate-500 font-medium">
+        <p className="text-slate-500 dark:text-slate-400 font-medium">
           Customize how you look to the squad.
         </p>
       </header>
@@ -88,7 +88,7 @@ export default function ProfilePage() {
 
           <div className="w-full space-y-6">
             <div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4 px-2">
+              <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 px-2">
                 Preset Avatars
               </h3>
               <div className="grid grid-cols-4 gap-4">

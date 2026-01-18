@@ -19,7 +19,7 @@ export default function MobileNav({
             key={item.name}
             href={item.href}
             className={`flex flex-col items-center gap-1 transition-colors ${
-              isActive ? "text-electric-purple font-bold" : "text-slate-400"
+              isActive ? "text-electric-purple font-bold" : "text-slate-400 dark:text-slate-500"
             }`}
           >
             <span className="text-xl">{item.icon}</span>

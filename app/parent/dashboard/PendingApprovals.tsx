@@ -62,7 +62,7 @@ export default function PendingApprovals({ approvals: initialApprovals }: Pendin
       }
     };
 
-    const interval = setInterval(pollForUpdates, 5000);
+    const interval = setInterval(pollForUpdates, 120000);
     return () => clearInterval(interval);
   }, []);
 

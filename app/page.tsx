@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MobileMenu } from "@/components/MobileMenu";
 
 export default function Home() {
   return (
@@ -36,6 +37,7 @@ export default function Home() {
               Get Started
             </a>
           </div>
+          <MobileMenu />
         </div>
       </nav>
 

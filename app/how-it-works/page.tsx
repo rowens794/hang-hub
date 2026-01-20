@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MobileMenu } from "@/components/MobileMenu";
 
 export default function HowItWorks() {
   return (
@@ -36,15 +37,7 @@ export default function HowItWorks() {
               Get Started
             </Link>
           </div>
-          <div className="flex items-center gap-3 md:hidden">
-            <ThemeToggle />
-            <Link
-              href="/signup"
-              className="rounded-full bg-[#8b5cf6] px-4 py-2 text-sm font-bold text-white"
-            >
-              Start
-            </Link>
-          </div>
+          <MobileMenu />
         </div>
       </nav>
 

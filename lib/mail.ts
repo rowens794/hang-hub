@@ -150,6 +150,99 @@ export async function sendHangApprovalEmail({
   }
 }
 
+export async function sendQRInviteEmail({
+  parentEmail,
+  inviteeName,
+  inviterName,
+  hangTitle,
+  hangDate,
+  approvalToken,
+  inviteToken,
+}: {
+  parentEmail: string;
+  inviteeName: string;
+  inviterName: string;
+  hangTitle?: string;
+  hangDate?: string;
+  approvalToken: string;
+  inviteToken: string;
+}) {
+  const baseUrl = getBaseUrl();
+  const approveLink = `${baseUrl}/invite/approve/${approvalToken}`;
+  const declineLink = `${baseUrl}/invite/decline/${approvalToken}`;
+
+  const formattedDate = hangDate
+    ? new Date(hangDate).toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
+
+  const hangSection = hangTitle
+    ? `
+      <div style="margin: 24px 0; padding: 20px; background-color: #f3f4f6; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+        <p style="margin: 0 0 4px 0; font-size: 14px; color: #6b7280;">They're also invited to:</p>
+        <p style="margin: 0 0 8px 0; font-size: 20px; font-weight: bold; color: #111827;">${hangTitle}</p>
+        ${formattedDate ? `<p style="margin: 0; font-size: 16px; color: #6b7280;">${formattedDate}</p>` : ""}
+      </div>
+    `
+    : "";
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "HangHub <onboarding@resend.dev>",
+      to: [parentEmail],
+      subject: `${inviteeName} was invited to join HangHub!`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <h1 style="color: #8b5cf6;">${inviteeName} was invited to HangHub!</h1>
+
+          <p style="font-size: 16px; color: #4b5563;"><strong>${inviterName}</strong> wants to be friends with <strong>${inviteeName}</strong> on HangHub.</p>
+
+          ${hangSection}
+
+          <div style="margin: 24px 0; padding: 20px; background-color: #f9fafb; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold; color: #111827;">What is HangHub?</p>
+            <p style="margin: 0; color: #4b5563;">HangHub is an app that helps kids plan sleepovers, after-school hangs, and more - with built-in parental approval so you always know what's happening.</p>
+          </div>
+
+          <p style="font-size: 16px; color: #4b5563; margin-bottom: 24px;">Would you like to create an account for ${inviteeName}?</p>
+
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 30px auto;">
+            <tr>
+              <td style="padding-right: 8px;">
+                <a href="${approveLink}" style="background-color: #22c55e; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; text-align: center;">
+                  Yes, Create Account
+                </a>
+              </td>
+              <td style="padding-left: 8px;">
+                <a href="${declineLink}" style="background-color: #ef4444; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; text-align: center;">
+                  No Thanks
+                </a>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin-top: 30px; font-size: 14px; color: #9ca3af; text-align: center;">If you didn't expect this email, you can safely ignore it.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("Resend error:", error);
+      return { error };
+    }
+
+    return { data };
+  } catch (err) {
+    console.error("Failed to send QR invite email:", err);
+    return { error: err };
+  }
+}
+
 export async function sendWelcomeEmail(
   email: string,
   name: string,

@@ -12,6 +12,7 @@ import {
   getMyInvites,
 } from "@/lib/actions";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { QRInviteModal } from "@/components/QRInviteModal";
 
 // Types
 type HangStatus = "suggested" | "confirmed" | "parent_approved";
@@ -68,6 +69,7 @@ export default function DashboardClient({
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [selectedHangForAttendees, setSelectedHangForAttendees] =
     useState<Hang | null>(null);
+  const [qrInviteHang, setQrInviteHang] = useState<Hang | null>(null);
   const [currentProfileImage, setCurrentProfileImage] = useState(
     currentUser?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Me"
   );
@@ -370,11 +372,12 @@ export default function DashboardClient({
                 </div>
 
                 <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-50 dark:border-slate-800">
-                  <button
-                    onClick={() => setSelectedHangForAttendees(hang)}
-                    className="flex -space-x-2 hover:scale-105 transition-transform"
-                    title="View Attendees"
-                  >
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setSelectedHangForAttendees(hang)}
+                      className="flex -space-x-2 hover:scale-105 transition-transform"
+                      title="View Attendees"
+                    >
                     {hang.friendsIn.slice(0, 4).map((id) => {
                       const friend = [
                         ...friends,
@@ -398,7 +401,20 @@ export default function DashboardClient({
                         +{hang.friendsIn.length - 4}
                       </div>
                     )}
-                  </button>
+                    </button>
+                    {/* QR Invite Button */}
+                    {!hang.isCancelled && hang.myApprovalStatus !== 3 && hang.myApprovalStatus !== 4 && (
+                      <button
+                        onClick={() => setQrInviteHang(hang)}
+                        className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-electric-purple hover:text-white transition-colors"
+                        title="Invite via QR"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
 
                   {/* Hide button if declined, cancelled, or hang is cancelled */}
                   {hang.myApprovalStatus !== 3 && hang.myApprovalStatus !== 4 && !hang.isCancelled && (
@@ -577,6 +593,16 @@ export default function DashboardClient({
             </button>
           </div>
         </div>
+      )}
+
+      {/* QR Invite Modal */}
+      {qrInviteHang && (
+        <QRInviteModal
+          type="hang"
+          hangId={qrInviteHang.id}
+          hangTitle={qrInviteHang.title}
+          onClose={() => setQrInviteHang(null)}
+        />
       )}
     </>
   );

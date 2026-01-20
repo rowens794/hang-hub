@@ -135,6 +135,26 @@ export async function initSchema() {
       FOREIGN KEY (hang_id) REFERENCES hangs (id) ON DELETE CASCADE,
       FOREIGN KEY (child_id) REFERENCES children (id) ON DELETE CASCADE
     )`,
+      // qr_invites table - QR code invites for non-users
+      `CREATE TABLE IF NOT EXISTS qr_invites (
+      id TEXT PRIMARY KEY,
+      inviter_child_id TEXT NOT NULL,
+      hang_id TEXT,
+      invite_type TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      invitee_name TEXT,
+      parent_email TEXT,
+      approval_token TEXT,
+      approval_token_expires_at TEXT,
+      signup_token TEXT,
+      signup_token_expires_at TEXT,
+      new_child_id TEXT,
+      expires_at TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (inviter_child_id) REFERENCES children (id),
+      FOREIGN KEY (hang_id) REFERENCES hangs (id) ON DELETE SET NULL,
+      FOREIGN KEY (new_child_id) REFERENCES children (id)
+    )`,
     ],
     "write"
   );

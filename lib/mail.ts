@@ -24,7 +24,7 @@ export async function sendParentInviteEmail(parentEmail: string) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "HangHub <onboarding@resend.dev>",
+      from: "HangHub <onboarding@hang-hub.com>",
       to: [parentEmail],
       subject: "Your kid wants to join HangHub!",
       html: `
@@ -96,7 +96,7 @@ export async function sendHangApprovalEmail({
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "HangHub <onboarding@resend.dev>",
+      from: "HangHub <onboarding@hang-hub.com>",
       to: [parentEmail],
       subject: `${childName} wants to hang out - approval needed!`,
       html: `
@@ -193,7 +193,7 @@ export async function sendQRInviteEmail({
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "HangHub <onboarding@resend.dev>",
+      from: "HangHub <onboarding@hang-hub.com>",
       to: [parentEmail],
       subject: `${inviteeName} was invited to join HangHub!`,
       html: `
@@ -254,7 +254,7 @@ export async function sendWelcomeEmail(
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "HangHub <onboarding@resend.dev>",
+      from: "HangHub <onboarding@hang-hub.com>",
       to: [email],
       subject: "Welcome to HangHub! Please verify your email",
       html: `
